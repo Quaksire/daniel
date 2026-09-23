@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DanielVIP - Explore the world's gazelles. Search, discover and learn about gazelle species.">
+  <title>DanielVIP 🦌 | Gazelles of the World</title>
+  <style>
+    :root {
+      --bg: #fffaf0;
+      --paper: #ffffff;
+      --ink: #263238;
+      --muted: #66756f;
+      --green: #2e7d5b;
+      --green-dark: #205b42;
+      --yellow: #ffd166;
+      --orange: #f4a261;
+      --border: #e8dfcf;
+      --shadow: 0 10px 30px rgba(67, 52, 30, .09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255, 209, 102, .22), transparent 25rem),
+        radial-gradient(circle at 90% 15%, rgba(46, 125, 91, .12), transparent 24rem),
+        var(--bg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: inherit; }
+
+    header {
+      padding: 42px 20px 28px;
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(2.1rem, 7vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      color: var(--green-dark);
+    }
+
+    .logo span {
+      display: inline-grid;
+      place-items: center;
+      width: 1.1em;
+      height: 1.1em;
+      border-radius: 30% 70% 60% 40%;
+      background: var(--yellow);
+      transform: rotate(-8deg);
+      font-size: .55em;
+    }
+
+    .subtitle {
+      max-width: 700px;
+      margin: 10px auto 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 60px;
+    }
+
+    .controls {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 28px;
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      pointer-events: none;
+    }
+
+    #search {
+      width: 100%;
+      padding: 15px 18px 15px 48px;
+      border: 2px solid transparent;
+      border-radius: 15px;
+      background: #f5f2ea;
+      color: var(--ink);
+      font: inherit;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    #search:focus {
+      border-color: var(--yellow);
+      background: white;
+    }
+
+    #count {
+      white-space: nowrap;
+      color: var(--muted);
+      font-weight: 700;
+      padding: 0 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 330px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-5px) rotate(-.3deg);
+      box-shadow: 0 16px 38px rgba(67, 52, 30, .15);
+      outline: none;
+    }
+
+    .image {
+      position: relative;
+      height: 205px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e8f1df, #fff0c7);
+    }
+
+    .image img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      transition: transform .35s ease;
+    }
+
+    .card:hover .image img { transform: scale(1.04); }
+
+    .image .fallback {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      font-size: 5rem;
+    }
+
+    .genus {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+      color: var(--green-dark);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 16px 17px 18px;
+    }
+
+    .name {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.2;
+    }
+
+    .scientific {
+      margin-top: 7px;
+      color: var(--muted);
+      font-family: Georgia, serif;
+      font-size: .95rem;
+    }
+
+    .learn {
+      margin-top: auto;
+      padding-top: 14px;
+      color: var(--green);
+      font-size: .85rem;
+      font-weight: 800;
+    }
+
+    #empty {
+      display: none;
+      padding: 55px 20px;
+      text-align: center;
+      background: white;
+      border: 1px dashed var(--border);
+      border-radius: 24px;
+    }
+
+    #empty .big { font-size: 4rem; }
+
+    footer {
+      width: min(900px, calc(100% - 32px));
+      margin: 0 auto 45px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .84rem;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      header { padding-top: 28px; }
+      .controls { top: 6px; }
+      #count { display: none; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .card { min-height: 280px; border-radius: 18px; }
+      .image { height: 145px; }
+      .info { padding: 12px; }
+      .name { font-size: 1rem; }
+      .scientific { font-size: .82rem; }
+      .learn { font-size: .76rem; }
+    }
+
+    @media (max-width: 370px) {
+      .grid { grid-template-columns: 1fr; }
+      .image { height: 190px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><span>🦌</span>danielvip.com</div>
+    <p class="subtitle">
+      Welcome to the gazelle world! Explore the different living gazelle species,
+      discover their names, and click any card to learn more on Wikipedia.
+    </p>
+  </header>
+
+  <main>
+    <section class="controls" aria-label="Gazelle search">
+      <div class="search-wrap">
+        <span class="search-icon">🔎</span>
+        <input
+          id="search"
+          type="search"
+          autocomplete="off"
+          placeholder="Search gazelles..."
+          aria-label="Search gazelles"
+        >
+      </div>
+      <div id="count" aria-live="polite"></div>
+    </section>
+
+    <section id="grid" class="grid" aria-label="Gazelle species"></section>
+
+    <section id="empty">
+      <div class="big">🦌</div>
+      <h2>No gazelles found</h2>
+      <p>Try another name, genus, or scientific name.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Species names and article links follow the English Wikipedia gazelle taxonomy.
+      Animal photographs are loaded from Wikipedia's article thumbnails.
+      Wikipedia content is available under its applicable licenses.
+    </p>
+    <p>
+      Made for curious kids ❤️
+    </p>
+  </footer>
+
+  <script>
+    /*
+      DATA
+      ----
+      The list below contains the living gazelle species represented in the
+      Wikipedia gazelle taxonomy used by this site. Taxonomy can change, so
+      the Wikipedia article remains the source of truth for each species.
+    */
+    const gazelles = [
+      {
+        name: "Arabian gazelle",
+        scientific: "Gazella arabica",
+        genus: "Gazella",
+        wiki: "Arabian gazelle"
+      },
+      {
+        name: "Cuvier's gazelle",
+        scientific: "Gazella cuvieri",
+        genus: "Gazella",
+        wiki: "Cuvier's gazelle"
+      },
+      {
+        name: "Dorcas gazelle",
+        scientific: "Gazella dorcas",
+        genus: "Gazella",
+        wiki: "Dorcas gazelle"
+      },
+      {
+        name: "Goitered gazelle",
+        scientific: "Gazella subgutturosa",
+        genus: "Gazella",
+        wiki: "Goitered gazelle"
+      },
+      {
+        name: "Arabian sand gazelle",
+        scientific: "Gazella marica",
+        genus: "Gazella",
+        wiki: "Arabian sand gazelle"
+      },
+      {
+        name: "Chinkara (Indian gazelle)",
+        scientific: "Gazella bennettii",
+        genus: "Gazella",
+        wiki: "Chinkara"
+      },
+      {
+        name: "Mountain gazelle",
+        scientific: "Gazella gazella",
+        genus: "Gazella",
+        wiki: "Mountain gazelle"
+      },
+      {
+        name: "Rhim gazelle",
+        scientific: "Gazella leptoceros",
+        genus: "Gazella",
+        wiki: "Rhim gazelle"
+      },
+      {
+        name: "Speke's gazelle",
+        scientific: "Gazella spekei",
+        genus: "Gazella",
+        wiki: "Speke's gazelle"
+      },
+      {
+        name: "Mongalla gazelle",
+        scientific: "Eudorcas albonotata",
+        genus: "Eudorcas",
+        wiki: "Mongalla gazelle"
+      },
+      {
+        name: "Red-fronted gazelle",
+        scientific: "Eudorcas rufifrons",
+        genus: "Eudorcas",
+        wiki: "Red-fronted gazelle"
+      },
+      {
+        name: "Heuglin's gazelle",
+        scientific: "Eudorcas tilonura",
+        genus: "Eudorcas",
+        wiki: "Heuglin's gazelle"
+      },
+      {
+        name: "Thomson's gazelle",
+        scientific: "Eudorcas thomsonii",
+        genus: "Eudorcas",
+        wiki: "Thomson's gazelle"
+      },
+      {
+        name: "Dama gazelle",
+        scientific: "Nanger dama",
+        genus: "Nanger",
+        wiki: "Dama gazelle"
+      },
+      {
+        name: "Grant's gazelle",
+        scientific: "Nanger granti",
+        genus: "Nanger",
+        wiki: "Grant's gazelle"
+      },
+      {
+        name: "Soemmerring's gazelle",
+        scientific: "Nanger soemmerringii",
+        genus: "Nanger",
+        wiki: "Soemmerring's gazelle"
+      }
+    ];
+
+    const grid = document.getElementById("grid");
+    const search = document.getElementById("search");
+    const count = document.getElementById("count");
+    const empty = document.getElementById("empty");
+
+    function wikipediaUrl(title) {
+      return "https://en.wikipedia.org/wiki/" + encodeURIComponent(title.replaceAll(" ", "_"));
+    }
+
+    function wikipediaUrl(title) {
+      return "https://en.wikipedia.org/wiki/" +
+        encodeURIComponent(title.replaceAll(" ", "_"));
+    }
+
+    function createCard(gazelle) {
+      const card = document.createElement("a");
+      card.className = "card";
+      card.href = wikipediaUrl(gazelle.wiki);
+      card.target = "_blank";
+      card.rel = "noopener noreferrer";
+      card.dataset.search = (
+        gazelle.name + " " +
+        gazelle.scientific + " " +
+        gazelle.genus
+      ).toLowerCase();
+
+      card.innerHTML = `
+        <div class="image">
+          <span class="genus">${gazelle.genus}</span>
+          <div class="fallback" aria-hidden="true">🦌</div>
+        </div>
+        <div class="info">
+          <h2 class="name">${gazelle.name}</h2>
+          <div class="scientific">${gazelle.scientific}</div>
+          <div class="learn">Learn more on Wikipedia →</div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // Build all cards first, then ask Wikipedia for all article thumbnails
+    // in one CORS-enabled request. This is more reliable than making one
+    // REST request per card and also works when the site is hosted on GitHub Pages.
+    const cards = new Map();
+
+    gazelles.forEach(gazelle => {
+      const card = createCard(gazelle);
+      card.dataset.wiki = gazelle.wiki;
+      grid.appendChild(card);
+      cards.set(gazelle.wiki, card);
+    });
+
+    async function loadWikipediaImages() {
+      const titles = gazelles.map(gazelle => gazelle.wiki).join("|");
+
+      const apiUrl =
+        "https://en.wikipedia.org/w/api.php" +
+        "?action=query" +
+        "&format=json" +
+        "&origin=*" +
+        "&redirects=1" +
+        "&prop=pageimages" +
+        "&piprop=thumbnail" +
+        "&pithumbsize=600" +
+        "&titles=" + encodeURIComponent(titles);
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error("Wikipedia API returned " + response.status);
+
+        const data = await response.json();
+        const pages = Object.values(data.query?.pages || {});
+
+        pages.forEach(page => {
+          const thumbnail = page.thumbnail?.source;
+          if (!thumbnail) return;
+
+          // A redirect can change the final page title, so use the
+          // normalized title returned by Wikipedia where possible.
+          const originalTitle = page.title;
+          let card = cards.get(originalTitle);
+
+          if (!card) {
+            const matchingGazelle = gazelles.find(g =>
+              g.wiki.toLowerCase() === originalTitle.toLowerCase()
+            );
+            if (matchingGazelle) card = cards.get(matchingGazelle.wiki);
+          }
+
+          if (!card) return;
+
+          const imageContainer = card.querySelector(".image");
+          const fallback = card.querySelector(".fallback");
+
+          const img = document.createElement("img");
+          img.src = thumbnail;
+          img.alt = card.querySelector(".name").textContent;
+          img.loading = "lazy";
+          img.decoding = "async";
+
+          img.addEventListener("error", () => {
+            img.remove();
+            fallback.style.display = "grid";
+          });
+
+          img.addEventListener("load", () => {
+            fallback.style.display = "none";
+          });
+
+          imageContainer.insertBefore(img, fallback);
+        });
+      } catch (error) {
+        console.warn("Could not load Wikipedia images:", error);
+        // The cards remain usable and show the gazelle fallback icon.
+      }
+    }
+
+    loadWikipediaImages();
+
+    function filter() {
+      const query = search.value.trim().toLowerCase();
+      let visible = 0;
+
+      [...grid.children].forEach(card => {
+        const match = !query || card.dataset.search.includes(query);
+        card.hidden = !match;
+        if (match) visible++;
+      });
+
+      count.textContent = `${visible} gazelle${visible === 1 ? "" : "s"}`;
+      empty.style.display = visible === 0 ? "block" : "none";
+    }
+
+    search.addEventListener("input", filter);
+    filter();
+  </script>
+</body>
+</html>
